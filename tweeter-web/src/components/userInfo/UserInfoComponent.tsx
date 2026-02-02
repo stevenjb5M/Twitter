@@ -1,7 +1,6 @@
 import "./UserInfoComponent.css";
-import { useContext } from "react";
-import { UserInfoContext, UserInfoActionsContext } from "./UserInfoContexts";
 import { useEffect, useState } from "react";
+import { useUserInfo, useUserInfoActions } from "./UserHooks";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthToken, FakeData, User } from "tweeter-shared";
 import { useMessageActions } from "../toaster/MessageHooks";
@@ -13,8 +12,8 @@ const UserInfo = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { displayErrorMessage, displayInfoMessage, deleteMessage} = useMessageActions();
 
-  const { currentUser, authToken, displayedUser } = useContext(UserInfoContext);
-  const { setDisplayedUser } = useContext(UserInfoActionsContext);
+  const { currentUser, authToken, displayedUser } = useUserInfo();
+  const { setDisplayedUser } = useUserInfoActions();
   const navigate = useNavigate();
   const location = useLocation();
 

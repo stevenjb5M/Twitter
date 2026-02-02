@@ -1,8 +1,7 @@
 import "./Register.css";
 import "bootstrap/dist/css/bootstrap.css";
-import { useContext } from "react";
-import { UserInfoActionsContext } from "../../userInfo/UserInfoContexts";
 import { ChangeEvent, useState } from "react";
+import { useUserInfoActions } from "../../userInfo/UserHooks";
 import { Link, useNavigate } from "react-router-dom";
 import AuthenticationFormLayout from "../AuthenticationFormLayout";
 import { AuthToken, FakeData, User } from "tweeter-shared";
@@ -22,7 +21,7 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { updateUserInfo } = useContext(UserInfoActionsContext);
+  const { updateUserInfo } = useUserInfoActions();
   const { displayErrorMessage } = useMessageActions();
   
 
