@@ -1,8 +1,9 @@
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { UserInfoActionsContext, UserInfoContext } from "./UserInfoContexts";
 import { useNavigate } from "react-router-dom";
-import { AuthToken, User, FakeData } from "tweeter-shared";
+import { User } from "tweeter-shared";
 import { useMessageActions } from "../toaster/MessageHooks";
+import { UserNavigationPresenter, UserNavigationView } from "../../presenter/UserNavigationPresenter";
 
 export const useUserInfo = () => useContext(UserInfoContext);
 export const useUserInfoActions = () => useContext(UserInfoActionsContext);
@@ -12,36 +13,25 @@ export const useUserNavigation = () => {
     const { setDisplayedUser } = useUserInfoActions();
     const navigate = useNavigate();
 
+
+    const listener: UserNavigationView = {
+        setDisplayedUser: (user: User) => setDisplayedUser(user),
+        navigate: (path: string) => navigate(path),
+        displayErrorMessage: displayErrorMessage
+    };
+
+    const presenterRef = useRef(new UserNavigationPresenter(listener));
+
     const navigateToUser = async (event: React.MouseEvent, featurePath: string): Promise<void> => {
         event.preventDefault();
 
-        try {
-            const alias = extractAlias(event.target.toString());
-
-            const toUser = await getUser(authToken!, alias);
-
-            if (toUser) {
-                if (!toUser.equals(displayedUser!)) {
-                    setDisplayedUser(toUser);
-                    navigate(`${featurePath}/${toUser.alias}`);
-                }
-            }
-        } catch (error) {
-            displayErrorMessage(`Failed to get user because of exception: ${error}`);
-        }
+        const alias = extractAlias(event.target.toString());
+        presenterRef.current.navigateToUser(authToken!, displayedUser!, alias, featurePath);
     };
 
     const extractAlias = (value: string): string => {
         const index = value.indexOf("@");
         return value.substring(index);
-    };
-
-    const getUser = async (
-        authToken: AuthToken,
-        alias: string
-    ): Promise<User | null> => {
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.findUserByAlias(alias);
     };
 
     return {navigateToUser}
